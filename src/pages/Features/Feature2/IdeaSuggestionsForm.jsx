@@ -10,6 +10,9 @@ import { Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { fetchPublic } from "../../../utils/api";
 
+const API_URL = "https://stratify.runasp.net/api/ideas/suggest";
+
+
 // Zod Schema 
 const formSchema = z.object({
   budget: z
@@ -38,14 +41,21 @@ export default function IdeaSuggestionsForm() {
     try {
       setLoading(true);
 
-      const response = await fetchPublic("/ideas/suggest", {
+      const res = await fetch(`${API_URL}`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           budget: Number(data.budget),
           location: data.location,
           field: data.field,
         }),
       });
+
+      if (!res.ok) {
+        throw new Error(`Request failed (${res.status})`);
+      }
+
+      const response = await res.json();
 
       const { ideas, recommendation } = response;
 

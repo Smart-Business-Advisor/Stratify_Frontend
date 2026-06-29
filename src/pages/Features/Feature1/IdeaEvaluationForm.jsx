@@ -23,6 +23,9 @@ import {
   Info, 
 } from "lucide-react";
 
+
+const API_URL = "https://stratify.runasp.net/api/ideas/evaluate";
+
 /* ----------------------
    ZOD SCHEMA
 ---------------------- */
@@ -132,10 +135,17 @@ export default function IdeaEvaluationForm() {
         yearFounded: data.yearFounded,
       };
 
-      const apiResult = await fetchPublic("/ideas/evaluate", {
+      const res = await fetch(`${API_URL}`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      if (!res.ok) {
+        throw new Error(`Request failed (${res.status})`);
+      }
+
+      const apiResult = await res.json();
 
       setResult(apiResult);
 
